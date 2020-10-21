@@ -1,3 +1,8 @@
+# For a decent selection of .gitignore templates check out
+# 	https://github.com/github/gitignore
+# Dont forget to browse the Global folder.
+
+#venv:
 .venv
 
 
