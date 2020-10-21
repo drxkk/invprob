@@ -1,0 +1,10 @@
+.venv
+
+
+# VIM files
+Session.vim
+*.swp
+*.swo
+
+
+doc/build/
