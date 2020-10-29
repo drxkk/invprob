@@ -5,7 +5,25 @@
 #venv:
 .venv
 
-
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+# *.py[cod]
+# *$py.class
+#
+# Distribution / packaging
+# .Python
+build/
+# develop-eggs/
+dist/
+*.egg-info/
+# downloads/
+# eggs/
+# .eggs/
+# lib/
+# lib64/
+# parts/
+# sdist/
 
 # VIM Swap
 [._]*.s[a-v][a-z]

@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "invprob"
+version = "0.1.0"
+description = "Set of functions to solve invers problems."
+authors = ["drxkk"]
+license = "BSD"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "click"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+pytest = "^6.1.1"
+pylint = "^2.6.0"
+ipython = "^7.18.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.'MESSAGES CONTROL']
+# 88 : to work with Black
+# C0330 : to work with Black
+# C0103 : to work with very short mathemetical variable names
+max-line-length = 88	
+disable = "C0330, C0103"	#
