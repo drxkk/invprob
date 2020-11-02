@@ -1,23 +1,25 @@
-import numpy as np
+from IPython import embed
+import pytest
+import numpy
+from numpy import cos, sin, linspace, meshgrid, sqrt, pi, trapz
 
 from invprob.shepplogan.shepplogan import Shepplogan2d
 
 
-def test_ellipse():
+def test_init():
     """Take one ellipse from the Shepp-Logan phantom and test it."""
 
     phantom = Shepplogan2d()
 
     # [:6] : all r0 > 0
     # [:,7] : values of arctan are within +/- pi
-    # [:, 8-11] : empirically  hard coded numbers for Shepp-Logan model. No logical
-    #    numbers
     assert np.all(phantom.ellipses[:, 6] >= 0)
     assert np.all(np.abs(phantom.ellipses[:, 7]) <= np.pi)
-    np.testing.assert_allclose(phantom.ellipses[:, 8], np.ones(10), atol=0.05)
-    np.testing.assert_allclose(phantom.ellipses[:, 9], np.ones(10), atol=1.31)
-    np.testing.assert_allclose(phantom.ellipses[:, 10], np.zeros(10), atol=0.22)
-    np.testing.assert_allclose(phantom.ellipses[:, 11], np.zeros(10), atol=0.605)
+    np.testing.assert_equal(phantom.ellipses[[0, 1, 4, 5, 6, 7, 8, 9], 8], 1)
+    np.testing.assert_equal(phantom.ellipses[[0, 1, 4, 5, 6, 7, 8, 9], 9], 0)
+    np.testing.assert_allclose(phantom.ellipses[[2, 3], 8], 0.95, atol=0.002)
+    np.testing.assert_allclose(phantom.ellipses[2, 9], -0.31, atol=0.002)
+    np.testing.assert_allclose(phantom.ellipses[3, 9], +0.31, atol=0.002)
 
 
 def test_f():
@@ -40,3 +42,34 @@ def test_f():
     assert ph.f(-0.08, -0.605) == 1.03  # ellipse h
     assert ph.f(0.0, -0.605) == 1.03  # ellipse i
     assert ph.f(0.06, -0.605) == 1.03  # ellipse j
+
+
+@pytest.mark.parametrize("phi", numpy.linspace(0, 2 * numpy.pi, 11))
+def test_rf(phi):
+    """Test Radon transfomr of the phantom.
+
+    The most way to cover the most details is to comapre
+    anaytical form of the Radon transform with the numericall
+    Radon transform (integration over feature space.).
+
+    The smallest ellips minor/major axis is 0.023. This determines
+    integration resolution.
+    """
+    ph = Shepplogan2d()
+    np, nt = 201, 201
+
+    # create the rotated coordinate system (p,t)
+    ps = linspace(-1, 1, np)
+    ts = linspace(-1, 1, nt)
+
+    pss, tss = meshgrid(ps, ts)
+    # convert (p,t) into the (x,y) of the phantom
+    c, s = cos(phi), sin(phi)
+    xss = c * pss - s * tss
+    yss = s * pss + c * tss
+    fss = ph.f(xss, yss)
+
+    rf_nums = trapz(fss, ts, axis=0)
+    rf_anas = ph.rf(ps, phi)
+
+    numpy.testing.assert_allclose(rf_nums, rf_anas, atol=0.03)
